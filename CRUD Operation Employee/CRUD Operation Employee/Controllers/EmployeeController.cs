@@ -14,30 +14,28 @@ namespace CRUD_Operation_Employee.Controllers
         {
             this.db = db;
         }
-
+        
         [HttpPut("{employeeId}/employeecode")]
-       
-            public IActionResult UpdateEmployeeCode(int employeeId, [FromBody] string employeeCode)
+        public IActionResult UpdateEmployeeCode(int employeeId, [FromBody] string employeeCode)
+        {
+            var duplicateemployee = db.Employees.Any(e => e.employeeCode == employeeCode);
+            if (duplicateemployee)
             {
-                if (db.Employees.Any(e => e.employeeCode == employeeCode))
-                {
-                    return BadRequest("Duplicate employee code");
-                }
-
-                var employee = db.Employees.FirstOrDefault(e => e.employeeId == employeeId);
-                if (employee == null)
-                {
-                    return NotFound();
-                }
-
-                employee.employeeCode = employeeCode;
-                db.SaveChanges();
-
-                return Ok();
+                return BadRequest("Duplicate employee code");
             }
 
-        
+            var employee = db.Employees.FirstOrDefault(e => e.employeeId == employeeId);
+            if (employee == null)
+            {
+                return NotFound();
+            }
 
+            employee.employeeCode = employeeCode;
+            db.SaveChanges();
+
+            return Ok();
+        }
+        
         [HttpGet("salary")]
         public IActionResult GetEmployeesBySalary()
         {
@@ -60,7 +58,7 @@ namespace CRUD_Operation_Employee.Controllers
                 return NotFound();
             }
             var employees = (from e in db.EmployeeAttendance 
-                             where e.isPresent == 0 || e.isAbsent == 1 || e.isOffday == 1
+                             where e.isAbsent == 1
                              select e).ToList();
             return Ok(employees);
         }
