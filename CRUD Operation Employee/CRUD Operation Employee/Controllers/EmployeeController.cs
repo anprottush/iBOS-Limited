@@ -59,8 +59,9 @@ namespace CRUD_Operation_Employee.Controllers
             {
                 return NotFound();
             }
-            var employees = db.EmployeeAttendance.Where(e => e.isPresent == 0 || e.isAbsent == 1 || e.isOffday == 1)
-                                                 .Select(e => e.employeeId).ToList();
+            var employees = (from e in db.EmployeeAttendance 
+                             where e.isPresent == 0 || e.isAbsent == 1 || e.isOffday == 1
+                             select e).ToList();
             return Ok(employees);
         }
 
